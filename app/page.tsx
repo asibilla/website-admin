@@ -1,31 +1,29 @@
 'use client';
 import { Typography } from '@mui/material';
-// import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import type { FC } from 'react';
 
-// import { getArticle } from '@/api';
+import { ARTICLE_TYPES } from '@/constants';
 import ContentContainer from '@/components/ContentContainer';
-// import type { GetArticleContentItem } from '@/types';
 
-export default function Home() {
-  // const [content, setContent] = useState<GetArticleContentItem[] | null>(null);
-  // useEffect(() => {
-  //   const fetchContent = async () => {
-  //     const articleData = await getArticle({ type: 'homepage' });
-  //     if (!('error' in articleData)) {
-  //       setContent(articleData as GetArticleContentItem[]);
-  //     }
-  //   };
-
-  //   fetchContent();
-  // }, []);
-
+const Home: FC = () => {
   return (
     <div>
       <main>
         <ContentContainer>
           <Typography variant="h1">Admin Dashboard</Typography>
+          <Typography variant="body1">Select an article type.</Typography>
+          <ul>
+            {ARTICLE_TYPES.map((type) => (
+              <li key={type}>
+                <Link href={`/list/${type}`}>{type}</Link>
+              </li>
+            ))}
+          </ul>
         </ContentContainer>
       </main>
     </div>
   );
-}
+};
+
+export default Home;
