@@ -4,6 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import type { FC } from 'react';
 
 import ContentContainer from '@/components/ContentContainer';
+import EditArticleForm from '@/components/EditArticleForm';
 
 const Edit: FC = () => {
   const searchParams = useSearchParams();
@@ -15,6 +16,7 @@ const Edit: FC = () => {
       <Typography variant="h1">
         Edit {articleId} {articleType}
       </Typography>
+      <EditArticleForm />
     </ContentContainer>
   );
 };
