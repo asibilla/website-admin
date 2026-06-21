@@ -1,20 +1,36 @@
 'use client';
-import { useEffect, useRef, type FC } from 'react';
+import { useEffect, useRef, useState, type FC } from 'react';
 
 import 'quill/dist/quill.snow.css';
+
+type QuillInstance = InstanceType<Awaited<typeof import('quill')>['default']>;
 
 interface EditorProps {
   onChange: (content: string) => void;
   value: string;
 }
 
+const EMPTY_QUILL_HTML = '<p><br></p>';
+
+const normalizeQuillHtml = (html: string) =>
+  html === EMPTY_QUILL_HTML ? '' : html;
+
+const setQuillHtml = (quill: QuillInstance, html: string) => {
+  const nextHtml = html || '';
+  if (normalizeQuillHtml(quill.root.innerHTML) === nextHtml) return;
+
+  const selection = quill.getSelection();
+  quill.root.innerHTML = nextHtml;
+  if (selection) {
+    quill.setSelection(selection);
+  }
+};
+
 const ArticleBodyTextArea: FC<EditorProps> = ({ onChange, value }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const quillRef = useRef<InstanceType<
-    Awaited<typeof import('quill')>['default']
-  > | null>(null);
-
+  const quillRef = useRef<QuillInstance | null>(null);
   const onTextChangeRef = useRef(onChange);
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     onTextChangeRef.current = onChange;
@@ -25,7 +41,7 @@ const ArticleBodyTextArea: FC<EditorProps> = ({ onChange, value }) => {
     if (!container) return;
 
     let cancelled = false;
-    let quill: InstanceType<Awaited<typeof import('quill')>['default']>;
+    let quill: QuillInstance;
 
     const init = async () => {
       const { default: Quill } = await import('quill');
@@ -48,13 +64,11 @@ const ArticleBodyTextArea: FC<EditorProps> = ({ onChange, value }) => {
 
       quillRef.current = quill;
 
-      if (value) {
-        quill.root.innerHTML = value;
-      }
-
       quill.on('text-change', () => {
-        onTextChangeRef.current(quill.root.innerHTML);
+        onTextChangeRef.current(normalizeQuillHtml(quill.root.innerHTML));
       });
+
+      setIsReady(true);
     };
 
     void init();
@@ -63,10 +77,16 @@ const ArticleBodyTextArea: FC<EditorProps> = ({ onChange, value }) => {
       cancelled = true;
       quillRef.current = null;
       container.innerHTML = '';
+      setIsReady(false);
     };
-    // Quill is initialized once; `value` is only applied on first mount.
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional
   }, []);
+
+  useEffect(() => {
+    const quill = quillRef.current;
+    if (!quill || !isReady) return;
+
+    setQuillHtml(quill, value);
+  }, [value, isReady]);
 
   return <div ref={containerRef} className="quill-editor-wrapper" />;
 };

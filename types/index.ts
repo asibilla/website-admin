@@ -14,6 +14,8 @@ export type GetArticleContentItem = {
   title: string;
 };
 
+export type GetArticleContent = Pick<GetArticleContentItem, 'title' | 'body'>;
+
 export type GetArticleErrorResponse = {
   error: Error;
 };
@@ -29,4 +31,8 @@ export type GetArticleResponseItem = {
 
 export type GetArticleResponse = {
   response: GetArticleResponseItem[];
+};
+
+export type WriteArticleRequest = {
+  item: GetArticleResponseItem;
 };
