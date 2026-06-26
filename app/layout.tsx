@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 
+import Alert from '@/components/Alert';
+import { AppContextProvider } from '@/components/AppContext';
+import LoadingOverlay from '@/components/LoadingOverlay';
 import ThemeRegistry from '@/components/ThemeRegistry';
 
 const inter = Inter({
@@ -22,7 +25,13 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.variable} style={{ colorScheme: 'dark' }}>
       <body>
-        <ThemeRegistry>{children}</ThemeRegistry>
+        <ThemeRegistry>
+          <AppContextProvider>
+            <LoadingOverlay />
+            {children}
+            <Alert />
+          </AppContextProvider>
+        </ThemeRegistry>
       </body>
     </html>
   );

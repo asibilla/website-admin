@@ -1,3 +1,12 @@
+export type AppContextType = {
+  error: Error | null;
+  hasSuccessfullySaved: boolean;
+  isSaving: boolean;
+  setError: (error: Error | null) => void;
+  setHasSuccessfullySaved: (hasSuccessfullySaved: boolean) => void;
+  setIsSaving: (isSaving: boolean) => void;
+};
+
 export type GetArticleParams = {
   id?: string;
   type?: string;
@@ -34,13 +43,13 @@ export type GetArticleResponse = {
   response: GetArticleResponseItem[];
 };
 
+export type NormalizedApiResponse = {
+  data: GetArticleResponseItem | WriteArticleResponse | null;
+  error: Error | null;
+};
+
 export type WriteArticleRequest = {
   item: GetArticleResponseItem;
 };
 
 export type WriteArticleResponse = GetArticleResponseItem;
-
-export type NormalizedApiResponse = {
-  data: GetArticleResponseItem | WriteArticleResponse | null;
-  error: Error | null;
-};

@@ -1,4 +1,4 @@
-import { Button, TextField } from '@mui/material';
+import { Button, FormHelperText, TextField } from '@mui/material';
 import type { FC } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 
@@ -11,7 +11,12 @@ const EditArticleForm: FC<{
   disabled: boolean;
   submitArticle: (data: WriteArticleContent) => void;
 }> = ({ defaultValues, disabled, submitArticle }) => {
-  const { control, handleSubmit, reset } = useForm({ defaultValues });
+  const {
+    control,
+    formState: { errors },
+    handleSubmit,
+    reset,
+  } = useForm({ defaultValues });
 
   const title = useWatch({ control, name: 'title' });
   const body = useWatch({ control, name: 'body' });
@@ -27,15 +32,32 @@ const EditArticleForm: FC<{
           control={control}
           name="title"
           render={({ field }) => (
-            <TextField label="Title" fullWidth {...field} />
+            <TextField
+              error={!!errors.title}
+              helperText={errors.title?.message}
+              label="Title"
+              fullWidth
+              {...field}
+            />
           )}
+          rules={{ required: 'Title is required' }}
         />
       </EditArticleTextInputContainer>
       <EditArticleTextInputContainer>
         <Controller
           control={control}
           name="body"
-          render={({ field }) => <ArticleBodyTextArea {...field} />}
+          render={({ field }) => (
+            <>
+              <ArticleBodyTextArea {...field} />
+              {errors.body?.message && (
+                <FormHelperText error sx={{ marginLeft: '14px' }}>
+                  {errors.body.message}
+                </FormHelperText>
+              )}
+            </>
+          )}
+          rules={{ required: 'Body is required' }}
         />
       </EditArticleTextInputContainer>
       <Button

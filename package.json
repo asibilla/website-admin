@@ -17,6 +17,7 @@
     "@mui/material": "^9.0.1",
     "@mui/material-nextjs": "^9.0.1",
     "aws4fetch": "^1.0.20",
+    "lodash.noop": "^3.0.1",
     "next": "16.0.5",
     "quill": "^2.0.3",
     "react": "19.2.0",
@@ -26,6 +27,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/lodash.noop": "^3.0.9",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

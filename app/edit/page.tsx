@@ -1,24 +1,25 @@
 'use client';
-import { Alert, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import { useRouter, useSearchParams } from 'next/navigation';
 import type { FC } from 'react';
-import { useState } from 'react';
+import { useContext } from 'react';
 import { v4 } from 'uuid';
 
 import { writeArticle } from '@/api';
+import { AppContext } from '@/components/AppContext';
 import ContentContainer from '@/components/ContentContainer';
 import EditArticleForm from '@/components/EditArticleForm';
 import type { GetArticleContent } from '@/types';
 
 const Edit: FC = () => {
+  const { isSaving, setError, setIsSaving, setHasSuccessfullySaved } =
+    useContext(AppContext);
+
   const router = useRouter();
   const searchParams = useSearchParams();
   const articleId = searchParams.get('articleId');
   const articleType = searchParams.get('articleType');
   const isNew = articleId === 'new';
-
-  const [isSaving, setIsSaving] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
 
   const defaultValues: GetArticleContent = {
     body: '',
@@ -42,6 +43,7 @@ const Edit: FC = () => {
     if (responseError) {
       setError(responseError);
     } else {
+      setHasSuccessfullySaved(true);
       router.push(`/list/${articleType}`);
     }
   };
@@ -56,9 +58,6 @@ const Edit: FC = () => {
         disabled={isSaving}
         submitArticle={submitArticle}
       />
-      {error && (
-        <Alert sx={{ marginTop: 2 }} severity="error">{error.message || 'An error occurred'}</Alert>
-      )}
     </ContentContainer>
   );
 };
