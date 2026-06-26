@@ -1,4 +1,9 @@
-import { API_URL, GET_ARTICLE_PATH } from '@/constants';
+import {
+  API_URL,
+  ASSETS_URL,
+  GET_ARTICLE_PATH,
+  GET_REFERENCE_DATA_PATH,
+} from '@/constants';
 import type {
   GetArticleContentItem,
   GetArticleParams,
@@ -6,8 +11,9 @@ import type {
   GetArticleError,
   GetArticleErrorResponse,
   NormalizedApiResponse,
+  ReferenceDataResponseItem,
   WriteArticleContent,
-  WriteArticleResponse,
+  WriteArticleResponseItem,
 } from '@/types';
 
 const createQueryString = (params: GetArticleParams) => {
@@ -91,10 +97,28 @@ export const writeArticle = async ({
       throw new Error('Failed to write article');
     }
 
-    const responseData: WriteArticleResponse = await response.json();
+    const responseData: WriteArticleResponseItem = await response.json();
 
     return {
       data: responseData,
+      error: null,
+    };
+  } catch (error) {
+    return {
+      data: null,
+      error: error as Error,
+    };
+  }
+};
+
+export const getReferenceData = async (): Promise<NormalizedApiResponse> => {
+  try {
+    const response: Response = await fetch(
+      `${ASSETS_URL}${GET_REFERENCE_DATA_PATH}/articleTypes.json`
+    );
+    const data: ReferenceDataResponseItem = await response.json();
+    return {
+      data,
       error: null,
     };
   } catch (error) {

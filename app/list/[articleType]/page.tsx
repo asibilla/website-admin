@@ -1,10 +1,17 @@
 import type { FC } from 'react';
 
-import { ARTICLE_TYPES } from '@/constants';
-import ArticleList from './ArticleList';
+import { getReferenceData } from '@/api';
 
-export function generateStaticParams() {
-  return ARTICLE_TYPES.map((type) => ({ articleType: type }));
+import ArticleList from './ArticleList';
+import type { ReferenceDataResponseItem } from '@/types';
+
+export async function generateStaticParams() {
+  const { data } = await getReferenceData();
+  return (
+    (data as ReferenceDataResponseItem).map(({ key }) => ({
+      articleType: key,
+    })) ?? []
+  );
 }
 
 const Page: FC<{ params: Promise<{ articleType: string }> }> = async ({

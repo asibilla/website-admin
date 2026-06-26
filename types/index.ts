@@ -1,7 +1,9 @@
 export type AppContextType = {
+  articleTypes: ReferenceDataResponseItem;
   error: Error | null;
   hasSuccessfullySaved: boolean;
   isSaving: boolean;
+  setArticleTypes: (articleTypes: ReferenceDataResponseItem) => void;
   setError: (error: Error | null) => void;
   setHasSuccessfullySaved: (hasSuccessfullySaved: boolean) => void;
   setIsSaving: (isSaving: boolean) => void;
@@ -44,12 +46,21 @@ export type GetArticleResponse = {
 };
 
 export type NormalizedApiResponse = {
-  data: GetArticleResponseItem | WriteArticleResponse | null;
+  data:
+    | GetArticleResponseItem
+    | WriteArticleResponseItem
+    | ReferenceDataResponseItem
+    | null;
   error: Error | null;
 };
+
+export type ReferenceDataResponseItem = {
+  key: string;
+  label: string;
+}[];
 
 export type WriteArticleRequest = {
   item: GetArticleResponseItem;
 };
 
-export type WriteArticleResponse = GetArticleResponseItem;
+export type WriteArticleResponseItem = GetArticleResponseItem;
