@@ -15,6 +15,7 @@ export type GetArticleContentItem = {
 };
 
 export type GetArticleContent = Pick<GetArticleContentItem, 'title' | 'body'>;
+export type WriteArticleContent = GetArticleContent;
 
 export type GetArticleErrorResponse = {
   error: Error;
@@ -35,4 +36,11 @@ export type GetArticleResponse = {
 
 export type WriteArticleRequest = {
   item: GetArticleResponseItem;
+};
+
+export type WriteArticleResponse = GetArticleResponseItem;
+
+export type NormalizedApiResponse = {
+  data: GetArticleResponseItem | WriteArticleResponse | null;
+  error: Error | null;
 };

@@ -4,12 +4,13 @@ import { Controller, useForm, useWatch } from 'react-hook-form';
 
 import ArticleBodyTextArea from '@/components/ArticleBodyTextArea';
 import { EditArticleTextInputContainer } from '@/components/EditArticleFormInputContainers';
-import type { GetArticleContent } from '@/types';
+import type { GetArticleContent, WriteArticleContent } from '@/types';
 
 const EditArticleForm: FC<{
   defaultValues: GetArticleContent;
-  submitArticle: (data: GetArticleContent) => void;
-}> = ({ defaultValues, submitArticle }) => {
+  disabled: boolean;
+  submitArticle: (data: WriteArticleContent) => void;
+}> = ({ defaultValues, disabled, submitArticle }) => {
   const { control, handleSubmit, reset } = useForm({ defaultValues });
 
   const title = useWatch({ control, name: 'title' });
@@ -38,20 +39,22 @@ const EditArticleForm: FC<{
         />
       </EditArticleTextInputContainer>
       <Button
+        color="primary"
+        disabled={disabled}
         sx={{ marginRight: 1 }}
         type="submit"
         variant="contained"
-        color="primary"
       >
         Save
       </Button>
       <Button
-        type="button"
-        variant="contained"
         color="secondary"
+        disabled={disabled}
         onClick={() => {
           reset(defaultValues);
         }}
+        type="button"
+        variant="contained"
       >
         Reset
       </Button>

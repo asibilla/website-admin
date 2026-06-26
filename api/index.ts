@@ -5,6 +5,9 @@ import type {
   GetArticleResponse,
   GetArticleError,
   GetArticleErrorResponse,
+  NormalizedApiResponse,
+  WriteArticleContent,
+  WriteArticleResponse,
 } from '@/types';
 
 const createQueryString = (params: GetArticleParams) => {
@@ -55,6 +58,49 @@ export const getArticle = async (
     return {
       message: 'Failed to fetch article',
       raw: error as Error,
+    };
+  }
+};
+
+export const writeArticle = async ({
+  articleType,
+  data,
+  id,
+  method,
+}: {
+  articleType: string;
+  data: WriteArticleContent;
+  id: string;
+  method: 'PUT' | 'PATCH';
+}): Promise<NormalizedApiResponse> => {
+  try {
+    const response: Response = await fetch(`/api/write-article`, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        'article-id': id,
+        'article-type': articleType,
+        content: {
+          body: data.body,
+          title: data.title,
+        },
+      }),
+    });
+
+    if (!response.ok || response.status > 299) {
+      throw new Error('Failed to write article');
+    }
+
+    const responseData: WriteArticleResponse = await response.json();
+
+    return {
+      data: responseData,
+      error: null,
+    };
+  } catch (error) {
+    return {
+      data: null,
+      error: error as Error,
     };
   }
 };

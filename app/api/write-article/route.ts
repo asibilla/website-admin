@@ -27,7 +27,13 @@ async function writeArticle(request: Request, method: 'PUT' | 'PATCH') {
     body: JSON.stringify(body),
   });
 
-  return NextResponse.json(await response.json(), { status: response.status });
+  return new NextResponse(response.body, {
+    status: response.status,
+    headers: {
+      'Content-Type':
+        response.headers.get('Content-Type') ?? 'application/json',
+    },
+  });
 }
 
 export async function PUT(request: Request) {
