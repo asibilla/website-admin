@@ -23,8 +23,6 @@ const Home: FC = () => {
     fetchReferenceData();
   }, [setArticleTypes, setError]);
 
-  console.log(articleTypes);
-
   return (
     <div>
       <main>

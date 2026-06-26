@@ -14,6 +14,7 @@
     "@aws-sdk/credential-provider-node": "^3.972.57",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^9.1.1",
     "@mui/material": "^9.0.1",
     "@mui/material-nextjs": "^9.0.1",
     "aws4fetch": "^1.0.20",

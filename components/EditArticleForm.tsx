@@ -1,10 +1,19 @@
 import { Button, FormHelperText, TextField } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import { useRouter } from 'next/navigation';
 import type { FC } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 
 import ArticleBodyTextArea from '@/components/ArticleBodyTextArea';
 import { EditArticleTextInputContainer } from '@/components/EditArticleFormInputContainers';
 import type { GetArticleContent, WriteArticleContent } from '@/types';
+
+const StyledButtonWrapper = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  gap: theme.spacing(1),
+  width: '100%',
+}));
 
 const EditArticleForm: FC<{
   defaultValues: GetArticleContent;
@@ -17,6 +26,8 @@ const EditArticleForm: FC<{
     handleSubmit,
     reset,
   } = useForm({ defaultValues });
+
+  const router = useRouter();
 
   const title = useWatch({ control, name: 'title' });
   const body = useWatch({ control, name: 'body' });
@@ -60,26 +71,39 @@ const EditArticleForm: FC<{
           rules={{ required: 'Body is required' }}
         />
       </EditArticleTextInputContainer>
-      <Button
-        color="primary"
-        disabled={disabled}
-        sx={{ marginRight: 1 }}
-        type="submit"
-        variant="contained"
-      >
-        Save
-      </Button>
-      <Button
-        color="secondary"
-        disabled={disabled}
-        onClick={() => {
-          reset(defaultValues);
-        }}
-        type="button"
-        variant="contained"
-      >
-        Reset
-      </Button>
+
+      <StyledButtonWrapper>
+        <Button
+          color="primary"
+          disabled={disabled}
+          type="submit"
+          variant="contained"
+        >
+          Save
+        </Button>
+        <Button
+          color="secondary"
+          disabled={disabled}
+          onClick={() => {
+            reset(defaultValues);
+          }}
+          type="button"
+          variant="contained"
+        >
+          Reset
+        </Button>
+        <Button
+          color="secondary"
+          onClick={() => {
+            router.back();
+          }}
+          sx={{ marginLeft: 'auto' }}
+          type="button"
+          variant="contained"
+        >
+          Cancel
+        </Button>
+      </StyledButtonWrapper>
     </form>
   );
 };

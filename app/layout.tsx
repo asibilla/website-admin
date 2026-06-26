@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 
 import Alert from '@/components/Alert';
 import { AppContextProvider } from '@/components/AppContext';
+import HomeButton from '@/components/HomeButton';
 import LoadingOverlay from '@/components/LoadingOverlay';
 import ThemeRegistry from '@/components/ThemeRegistry';
 
@@ -28,6 +29,7 @@ export default function RootLayout({
         <ThemeRegistry>
           <AppContextProvider>
             <LoadingOverlay />
+            <HomeButton />
             {children}
             <Alert />
           </AppContextProvider>
