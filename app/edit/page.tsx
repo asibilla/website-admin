@@ -28,7 +28,7 @@ const Edit: FC = () => {
   });
 
   useEffect(() => {
-    if (articleId && articleType) {
+    if (articleId && !isNew && articleType) {
       const fetchArticle = async () => {
         const { data, error } = await getArticle({
           id: articleId,
@@ -47,7 +47,7 @@ const Edit: FC = () => {
       };
       fetchArticle();
     }
-  }, [articleId, articleType, setError]);
+  }, [articleId, articleType, isNew, setError]);
 
   const submitArticle = async (data: GetArticleContent) => {
     setIsSaving(true);

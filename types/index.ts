@@ -9,6 +9,10 @@ export type AppContextType = {
   setIsSaving: (isSaving: boolean) => void;
 };
 
+export type DeleteArticleRequest = {
+  key: UpdateKeys;
+};
+
 export type GetArticleParams = {
   id?: string;
   type?: string;
@@ -25,10 +29,7 @@ export type GetArticleContent = Pick<GetArticleContentItem, 'title' | 'body'>;
 export type GetArticleResponseItem = {
   'article-id': string;
   'article-type': string;
-  content: {
-    body: string;
-    title: string;
-  };
+  content: GetArticleContent;
 };
 
 export type GetArticleResponse = {
@@ -44,14 +45,26 @@ export type NormalizedApiResponse = {
   error: Error | null;
 };
 
+export type PatchArticleRequest = {
+  key: UpdateKeys;
+  updates: {
+    content: GetArticleContent;
+  };
+};
+
+export type PutArticleRequest = {
+  item: WriteArticleResponseItem;
+};
+
 export type ReferenceDataResponseItem = {
   key: string;
   label: string;
 };
-export type WriteArticleContent = GetArticleContent;
 
-export type WriteArticleRequest = {
-  item: WriteArticleResponseItem;
+export type UpdateKeys = {
+  'article-id': string;
+  'article-type': string;
 };
 
+export type WriteArticleContent = GetArticleContent;
 export type WriteArticleResponseItem = GetArticleResponseItem;

@@ -3,7 +3,12 @@ import { AwsClient } from 'aws4fetch';
 import { NextResponse } from 'next/server';
 
 import { API_URL, WRITE_ARTICLE_PATH } from '@/constants';
-import type { WriteArticleResponseItem, WriteArticleRequest } from '@/types';
+import type {
+  DeleteArticleRequest,
+  PatchArticleRequest,
+  PutArticleRequest,
+  WriteArticleResponseItem,
+} from '@/types';
 
 async function getAwsClient() {
   const credentials = await defaultProvider()();
@@ -16,15 +21,15 @@ async function getAwsClient() {
   });
 }
 
-async function writeArticle(request: Request, method: 'PUT' | 'PATCH') {
+async function writeArticle(
+  requestBody: DeleteArticleRequest | PutArticleRequest | PatchArticleRequest,
+  method: 'DELETE' | 'PUT' | 'PATCH'
+) {
   const aws = await getAwsClient();
-  const article = (await request.json()) as WriteArticleResponseItem;
-  const body: WriteArticleRequest = { item: article };
-
   const response = await aws.fetch(`${API_URL}${WRITE_ARTICLE_PATH}`, {
     method,
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
+    body: JSON.stringify(requestBody),
   });
 
   return new NextResponse(response.body, {
@@ -36,10 +41,37 @@ async function writeArticle(request: Request, method: 'PUT' | 'PATCH') {
   });
 }
 
-export async function PUT(request: Request) {
-  return writeArticle(request, 'PUT');
+export async function DELETE(request: Request) {
+  const article = (await request.json()) as WriteArticleResponseItem;
+  const requestBody = {
+    key: {
+      'article-id': article['article-id'],
+      'article-type': article['article-type'],
+    },
+  };
+  return writeArticle(requestBody, 'DELETE');
 }
 
 export async function PATCH(request: Request) {
-  return writeArticle(request, 'PATCH');
+  const article = (await request.json()) as WriteArticleResponseItem;
+  const requestBody = {
+    key: {
+      'article-id': article['article-id'],
+      'article-type': article['article-type'],
+    },
+    updates: {
+      content: {
+        body: article.content?.body ?? '',
+        title: article.content?.title ?? '',
+      },
+    },
+  };
+  return writeArticle(requestBody, 'PATCH');
+}
+
+export async function PUT(request: Request) {
+  const article = (await request.json()) as WriteArticleResponseItem;
+  const requestBody = { item: article };
+
+  return writeArticle(requestBody, 'PUT');
 }

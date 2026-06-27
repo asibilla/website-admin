@@ -76,7 +76,7 @@ export const writeArticle = async ({
   articleType: string;
   data: WriteArticleContent;
   id: string;
-  method: 'PUT' | 'PATCH';
+  method: 'DELETE' | 'PUT' | 'PATCH';
 }): Promise<NormalizedApiResponse> => {
   try {
     const response: Response = await fetch(`/api/write-article`, {
