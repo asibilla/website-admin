@@ -62,6 +62,8 @@ export async function PATCH(request: Request) {
     updates: {
       content: {
         body: article.content?.body ?? '',
+        imageUrl: article.content?.imageUrl ?? '',
+        subtitle: article.content?.subtitle ?? '',
         title: article.content?.title ?? '',
       },
     },

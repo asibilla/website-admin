@@ -99,6 +99,7 @@ export const writeArticle = async ({
         date: new Date().toISOString(),
         content: {
           body: data.body,
+          imageUrl: data.imageUrl ?? '',
           subtitle: data.subtitle,
           title: data.title,
         },
@@ -113,6 +114,36 @@ export const writeArticle = async ({
 
     return {
       data: responseData,
+      error: null,
+    };
+  } catch (error) {
+    return {
+      data: null,
+      error: error as Error,
+    };
+  }
+};
+
+export const uploadImage = async (
+  file: File
+): Promise<{ data: { url: string } | null; error: Error | null }> => {
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await fetch('/api/upload-image', {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to upload image');
+    }
+
+    const data: { url: string } = await response.json();
+
+    return {
+      data,
       error: null,
     };
   } catch (error) {

@@ -11,6 +11,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1075.0",
     "@aws-sdk/credential-provider-node": "^3.972.57",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
