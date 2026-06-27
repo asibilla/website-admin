@@ -21,7 +21,7 @@ export const AppContextProvider: FC<{ children: React.ReactNode }> = ({
   const [error, setError] = useState<Error | null>(null);
   const [hasSuccessfullySaved, setHasSuccessfullySaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [articleTypes, setArticleTypes] = useState<ReferenceDataResponseItem>(
+  const [articleTypes, setArticleTypes] = useState<ReferenceDataResponseItem[]>(
     []
   );
   return (

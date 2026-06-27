@@ -5,11 +5,8 @@ import {
   GET_REFERENCE_DATA_PATH,
 } from '@/constants';
 import type {
-  GetArticleContentItem,
   GetArticleParams,
   GetArticleResponse,
-  GetArticleError,
-  GetArticleErrorResponse,
   NormalizedApiResponse,
   ReferenceDataResponseItem,
   WriteArticleContent,
@@ -33,7 +30,7 @@ const createQueryString = (params: GetArticleParams) => {
 
 export const getArticle = async (
   params: GetArticleParams
-): Promise<GetArticleContentItem[] | GetArticleError> => {
+): Promise<NormalizedApiResponse> => {
   const { id = '', type = '' } = params;
   try {
     const response = await fetch(
@@ -50,20 +47,22 @@ export const getArticle = async (
       throw new Error('Failed to fetch article');
     }
 
-    const data: GetArticleResponse | GetArticleErrorResponse =
-      await response.json();
+    const data: GetArticleResponse = await response.json();
     if ('error' in data || !('response' in data)) {
       throw data.error ?? new Error('Failed to fetch article');
     }
-    return data.response.map(({ 'article-id': articleId, content }) => ({
-      articleId,
-      body: content?.body ?? '',
-      title: content?.title ?? '',
-    })) as GetArticleContentItem[];
+    return {
+      data: data.response.map(({ 'article-id': articleId, content }) => ({
+        articleId,
+        body: content?.body ?? '',
+        title: content?.title ?? '',
+      })),
+      error: null,
+    };
   } catch (error) {
     return {
-      message: 'Failed to fetch article',
-      raw: error as Error,
+      data: null,
+      error: error as Error,
     };
   }
 };
@@ -116,7 +115,7 @@ export const getReferenceData = async (): Promise<NormalizedApiResponse> => {
     const response: Response = await fetch(
       `${ASSETS_URL}${GET_REFERENCE_DATA_PATH}/articleTypes.json`
     );
-    const data: ReferenceDataResponseItem = await response.json();
+    const data: ReferenceDataResponseItem[] = await response.json();
     return {
       data,
       error: null,

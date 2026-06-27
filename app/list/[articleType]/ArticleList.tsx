@@ -1,33 +1,70 @@
 'use client';
 
 import { Button, Typography } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { styled } from '@mui/material/styles';
 import Link from 'next/link';
-// import { useEffect, useState } from 'react';
+import type { FC } from 'react';
+import { useContext, useEffect } from 'react';
 
-// import { getArticle } from '@/api';
+import { AppContext } from '@/components/AppContext';
 import ContentContainer from '@/components/ContentContainer';
-// import type { GetArticleContentItem } from '@/types';
+import { useReferenceData } from '@/hooks/useReferenceData';
+import type { GetArticleContentItem } from '@/types';
 
 type ArticleListProps = {
+  articles: GetArticleContentItem[] | null;
   articleType: string;
+  error: Error | null;
 };
 
-export default function ArticleList({ articleType }: ArticleListProps) {
-  // const [content, setContent] = useState<GetArticleContentItem[] | null>(null);
-  // useEffect(() => {
-  //   const fetchContent = async () => {
-  //     const articleData = await getArticle({ type: 'homepage' });
-  //     if (!('error' in articleData)) {
-  //       setContent(articleData as GetArticleContentItem[]);
-  //     }
-  //   };
+const List = styled('ul')(({ theme }) => ({
+  listStyle: 'none',
+  padding: 0,
+  marginBottom: theme.spacing(2, 0),
+}));
 
-  //   fetchContent();
-  // }, []);
+const ListItem = styled('li')({
+  display: 'flex',
+  alignItems: 'center',
+});
+
+const ArticleList: FC<ArticleListProps> = ({
+  articles,
+  articleType,
+  error,
+}) => {
+  const { setError } = useContext(AppContext);
+  const { getArticleLabelByType } = useReferenceData();
+  const articleLabel = getArticleLabelByType(articleType);
+
+  useEffect(() => {
+    if (error) {
+      setError(error);
+    }
+  }, [articles, error, setError]);
 
   return (
     <ContentContainer>
-      <Typography variant="h1">Article List {articleType}</Typography>
+      <Typography sx={{ marginBottom: 2 }} variant="h1">
+        {articleLabel} Entries
+      </Typography>
+      {articles && articles.length > 0 ? (
+        <List>
+          {articles.map((article) => (
+            <ListItem key={article.articleId}>
+              <Link
+                href={`/edit?articleId=${article.articleId}&articleType=${articleType}`}
+              >
+                {article.title}
+              </Link>
+              <Button startIcon={<DeleteIcon />} sx={{ marginLeft: '10px' }}>
+                Delete
+              </Button>
+            </ListItem>
+          ))}
+        </List>
+      ) : null}
       <Button
         color="primary"
         component={Link}
@@ -38,4 +75,6 @@ export default function ArticleList({ articleType }: ArticleListProps) {
       </Button>
     </ContentContainer>
   );
-}
+};
+
+export default ArticleList;

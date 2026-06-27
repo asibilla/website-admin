@@ -3,7 +3,7 @@ import { AwsClient } from 'aws4fetch';
 import { NextResponse } from 'next/server';
 
 import { API_URL, WRITE_ARTICLE_PATH } from '@/constants';
-import type { GetArticleResponseItem, WriteArticleRequest } from '@/types';
+import type { WriteArticleResponseItem, WriteArticleRequest } from '@/types';
 
 async function getAwsClient() {
   const credentials = await defaultProvider()();
@@ -18,7 +18,7 @@ async function getAwsClient() {
 
 async function writeArticle(request: Request, method: 'PUT' | 'PATCH') {
   const aws = await getAwsClient();
-  const article = (await request.json()) as GetArticleResponseItem;
+  const article = (await request.json()) as WriteArticleResponseItem;
   const body: WriteArticleRequest = { item: article };
 
   const response = await aws.fetch(`${API_URL}${WRITE_ARTICLE_PATH}`, {

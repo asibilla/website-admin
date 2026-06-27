@@ -1,9 +1,9 @@
 export type AppContextType = {
-  articleTypes: ReferenceDataResponseItem;
+  articleTypes: ReferenceDataResponseItem[];
   error: Error | null;
   hasSuccessfullySaved: boolean;
   isSaving: boolean;
-  setArticleTypes: (articleTypes: ReferenceDataResponseItem) => void;
+  setArticleTypes: (articleTypes: ReferenceDataResponseItem[]) => void;
   setError: (error: Error | null) => void;
   setHasSuccessfullySaved: (hasSuccessfullySaved: boolean) => void;
   setIsSaving: (isSaving: boolean) => void;
@@ -14,11 +14,6 @@ export type GetArticleParams = {
   type?: string;
 };
 
-export type GetArticleError = {
-  message: string;
-  raw: Error;
-};
-
 export type GetArticleContentItem = {
   articleId: string;
   body: string;
@@ -26,11 +21,6 @@ export type GetArticleContentItem = {
 };
 
 export type GetArticleContent = Pick<GetArticleContentItem, 'title' | 'body'>;
-export type WriteArticleContent = GetArticleContent;
-
-export type GetArticleErrorResponse = {
-  error: Error;
-};
 
 export type GetArticleResponseItem = {
   'article-id': string;
@@ -47,9 +37,9 @@ export type GetArticleResponse = {
 
 export type NormalizedApiResponse = {
   data:
-    | GetArticleResponseItem
+    | GetArticleContentItem[]
     | WriteArticleResponseItem
-    | ReferenceDataResponseItem
+    | ReferenceDataResponseItem[]
     | null;
   error: Error | null;
 };
@@ -57,10 +47,11 @@ export type NormalizedApiResponse = {
 export type ReferenceDataResponseItem = {
   key: string;
   label: string;
-}[];
+};
+export type WriteArticleContent = GetArticleContent;
 
 export type WriteArticleRequest = {
-  item: GetArticleResponseItem;
+  item: WriteArticleResponseItem;
 };
 
 export type WriteArticleResponseItem = GetArticleResponseItem;
