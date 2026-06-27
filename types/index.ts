@@ -33,7 +33,9 @@ export type GetArticleResponseItem = {
 };
 
 export type GetArticleResponse = {
-  response: GetArticleResponseItem[];
+  response: {
+    items: GetArticleResponseItem[];
+  };
 };
 
 export type NormalizedApiResponse = {

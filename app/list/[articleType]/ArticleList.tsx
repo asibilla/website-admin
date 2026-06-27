@@ -1,11 +1,11 @@
 'use client';
 
-import { Button, Typography } from '@mui/material';
+import { Button, CircularProgress, Typography } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { styled } from '@mui/material/styles';
 import Link from 'next/link';
 import type { FC } from 'react';
-import { useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 
 import { getArticle, writeArticle } from '@/api';
 import { AppContext } from '@/components/AppContext';
@@ -14,9 +14,7 @@ import { useReferenceData } from '@/hooks/useReferenceData';
 import type { GetArticleContentItem } from '@/types';
 
 type ArticleListProps = {
-  articles: GetArticleContentItem[] | null;
   articleType: string;
-  error: Error | null;
 };
 
 const List = styled('ul')(({ theme }) => ({
@@ -30,32 +28,31 @@ const ListItem = styled('li')({
   alignItems: 'center',
 });
 
-const ArticleList: FC<ArticleListProps> = ({
-  articles,
-  articleType,
-  error,
-}) => {
+const ArticleList: FC<ArticleListProps> = ({ articleType }) => {
   const { setError, setIsSaving } = useContext(AppContext);
   const { getArticleLabelByType } = useReferenceData();
   const articleLabel = getArticleLabelByType(articleType);
-  const [cachedArticles, setCachedArticles] = useState<
-    GetArticleContentItem[] | null
-  >(articles);
+  const [articles, setArticles] = useState<GetArticleContentItem[] | null>([]);
+  const [hasFetchedArticles, setHasFetchedArticles] = useState(false);
 
-  useEffect(() => {
-    if (error) {
-      setError(error);
-    }
-  }, [articles, error, setError]);
-
-  const refetchArticles = async () => {
+  const fetchArticles = useCallback(async () => {
     const { data, error } = await getArticle({ type: articleType });
     if (error) {
       setError(error);
     } else {
-      setCachedArticles(data as GetArticleContentItem[] | null);
+      setArticles(data as GetArticleContentItem[] | null);
     }
-  };
+    if (!hasFetchedArticles) {
+      setHasFetchedArticles(true);
+    }
+  }, [articleType, hasFetchedArticles, setError]);
+
+  useEffect(() => {
+    const initialFetch = async () => {
+      fetchArticles();
+    };
+    initialFetch();
+  }, [fetchArticles]);
 
   const deleteArticle = async (articleId: string) => {
     setIsSaving(true);
@@ -68,7 +65,7 @@ const ArticleList: FC<ArticleListProps> = ({
     if (responseError) {
       setError(responseError);
     } else {
-      refetchArticles();
+      fetchArticles();
     }
     setIsSaving(false);
   };
@@ -78,9 +75,14 @@ const ArticleList: FC<ArticleListProps> = ({
       <Typography sx={{ marginBottom: 2 }} variant="h1">
         {articleLabel} Entries
       </Typography>
-      {cachedArticles && cachedArticles.length > 0 ? (
+      {!hasFetchedArticles ? (
+        <div>
+          <CircularProgress />
+        </div>
+      ) : null}
+      {articles && articles.length > 0 ? (
         <List>
-          {cachedArticles.map((article) => (
+          {articles.map((article) => (
             <ListItem key={article.articleId}>
               <Link
                 href={`/edit?articleId=${article.articleId}&articleType=${articleType}`}

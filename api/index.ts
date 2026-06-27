@@ -52,7 +52,7 @@ export const getArticle = async (
       throw data.error ?? new Error('Failed to fetch article');
     }
     return {
-      data: data.response.map(({ 'article-id': articleId, content }) => ({
+      data: data.response.items.map(({ 'article-id': articleId, content }) => ({
         articleId,
         body: content?.body ?? '',
         title: content?.title ?? '',
