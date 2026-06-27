@@ -7,7 +7,7 @@ import Link from 'next/link';
 import type { FC } from 'react';
 import { useCallback, useContext, useEffect, useState } from 'react';
 
-import { getArticle, writeArticle } from '@/api';
+import { deleteImage, getArticle, writeArticle } from '@/api';
 import { AppContext } from '@/components/AppContext';
 import ContentContainer from '@/components/ContentContainer';
 import { useReferenceData } from '@/hooks/useReferenceData';
@@ -54,12 +54,23 @@ const ArticleList: FC<ArticleListProps> = ({ articleType }) => {
     initialFetch();
   }, [fetchArticles]);
 
-  const deleteArticle = async (articleId: string) => {
+  const deleteArticle = async (article: GetArticleContentItem) => {
     setIsSaving(true);
+    setError(null);
+
+    if (article.imageUrl) {
+      const { error: imageError } = await deleteImage(article.imageUrl);
+      if (imageError) {
+        setError(imageError);
+        setIsSaving(false);
+        return;
+      }
+    }
+
     const { error: responseError } = await writeArticle({
       articleType,
-      data: { body: '', subtitle: '', title: '' },
-      id: articleId,
+      data: { body: '', imageUrl: '', subtitle: '', title: '' },
+      id: article.articleId,
       method: 'DELETE',
     });
     if (responseError) {
@@ -90,7 +101,7 @@ const ArticleList: FC<ArticleListProps> = ({ articleType }) => {
                 {article.title}
               </Link>
               <Button
-                onClick={() => deleteArticle(article.articleId)}
+                onClick={() => deleteArticle(article)}
                 startIcon={<DeleteIcon />}
                 sx={{ marginLeft: '10px' }}
               >

@@ -4,15 +4,17 @@ import {
   Button,
   CircularProgress,
   FormHelperText,
+  IconButton,
   TextField,
 } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { styled } from '@mui/material/styles';
 import { useRouter } from 'next/navigation';
 import type { ChangeEvent, FC } from 'react';
 import { useContext, useRef, useState } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 
-import { uploadImage } from '@/api';
+import { deleteImage, uploadImage } from '@/api';
 import ArticleBodyTextArea from '@/components/ArticleBodyTextArea';
 import { AppContext } from '@/components/AppContext';
 import { EditArticleTextInputContainer } from '@/components/EditArticleFormInputContainers';
@@ -25,12 +27,18 @@ const StyledButtonWrapper = styled('div')(({ theme }) => ({
   width: '100%',
 }));
 
-const ImagePreview = styled('img')(({ theme }) => ({
-  display: 'block',
+const ImagePreviewContainer = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'flex-start',
+  gap: theme.spacing(1),
   marginTop: theme.spacing(1),
+}));
+
+const ImagePreview = styled('img')({
+  display: 'block',
   maxHeight: 200,
   maxWidth: '100%',
-}));
+});
 
 const ImageUploadControls = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -55,6 +63,7 @@ const EditArticleForm: FC<{
   const { setError } = useContext(AppContext);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [isDeletingImage, setIsDeletingImage] = useState(false);
 
   const title = useWatch({ control, name: 'title' });
   const body = useWatch({ control, name: 'body' });
@@ -84,6 +93,24 @@ const EditArticleForm: FC<{
     }
 
     setValue('imageUrl', data.url, { shouldDirty: true });
+  };
+
+  const handleDeleteImage = async () => {
+    if (!imageUrl) return;
+
+    setIsDeletingImage(true);
+    setError(null);
+
+    const { error } = await deleteImage(imageUrl);
+
+    setIsDeletingImage(false);
+
+    if (error) {
+      setError(error);
+      return;
+    }
+
+    setValue('imageUrl', '', { shouldDirty: true });
   };
 
   return (
@@ -127,18 +154,34 @@ const EditArticleForm: FC<{
                 type="file"
               />
               <ImageUploadControls>
-                <Button
-                  disabled={disabled || isUploading}
-                  onClick={() => fileInputRef.current?.click()}
-                  type="button"
-                  variant="outlined"
-                >
-                  Upload image
-                </Button>
+                {!imageUrl ? (
+                  <Button
+                    disabled={disabled || isUploading}
+                    onClick={() => fileInputRef.current?.click()}
+                    type="button"
+                    variant="outlined"
+                  >
+                    Upload image
+                  </Button>
+                ) : null}
                 {isUploading ? <CircularProgress size={24} /> : null}
               </ImageUploadControls>
               {imageUrl ? (
-                <ImagePreview alt="Article image preview" src={imageUrl} />
+                <ImagePreviewContainer>
+                  <ImagePreview alt="Article image preview" src={imageUrl} />
+                  <IconButton
+                    aria-label="Delete image"
+                    disabled={disabled || isDeletingImage}
+                    onClick={handleDeleteImage}
+                    size="small"
+                  >
+                    {isDeletingImage ? (
+                      <CircularProgress size={20} />
+                    ) : (
+                      <DeleteIcon />
+                    )}
+                  </IconButton>
+                </ImagePreviewContainer>
               ) : null}
             </>
           )}

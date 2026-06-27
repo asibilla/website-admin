@@ -154,6 +154,32 @@ export const uploadImage = async (
   }
 };
 
+export const deleteImage = async (
+  url: string
+): Promise<{ data: { success: boolean } | null; error: Error | null }> => {
+  try {
+    const response = await fetch('/api/delete-image', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete image');
+    }
+
+    return {
+      data: { success: true },
+      error: null,
+    };
+  } catch (error) {
+    return {
+      data: null,
+      error: error as Error,
+    };
+  }
+};
+
 export const getReferenceData = async (): Promise<NormalizedApiResponse> => {
   try {
     const response: Response = await fetch(

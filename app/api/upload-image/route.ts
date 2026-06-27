@@ -1,20 +1,7 @@
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import { defaultProvider } from '@aws-sdk/credential-provider-node';
 import { NextResponse } from 'next/server';
 import { v4 as uuid } from 'uuid';
 
-const S3_REGION = process.env.AWS_REGION ?? 'us-east-1';
-const S3_BUCKET_NAME = process.env.S3_BUCKET_NAME ?? '';
-const S3_PUBLIC_BASE_URL =
-  process.env.S3_PUBLIC_BASE_URL ?? 'https://andysibilla.com';
-
-async function getS3Client() {
-  const credentials = await defaultProvider()();
-  return new S3Client({
-    region: S3_REGION,
-    credentials,
-  });
-}
+import { S3_BUCKET_NAME, uploadImageToS3 } from '@/lib/s3';
 
 export async function POST(request: Request) {
   if (!S3_BUCKET_NAME) {
@@ -44,18 +31,7 @@ export async function POST(request: Request) {
       : '.jpg';
     const key = `images/${uuid()}${extension}`;
     const buffer = Buffer.from(await file.arrayBuffer());
-
-    const s3 = await getS3Client();
-    await s3.send(
-      new PutObjectCommand({
-        Bucket: S3_BUCKET_NAME,
-        Key: key,
-        Body: buffer,
-        ContentType: file.type,
-      })
-    );
-
-    const url = `${S3_PUBLIC_BASE_URL.replace(/\/$/, '')}/${key}`;
+    const url = await uploadImageToS3(buffer, key, file.type);
 
     return NextResponse.json({ url });
   } catch {
