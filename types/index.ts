@@ -20,16 +20,24 @@ export type GetArticleParams = {
 
 export type GetArticleContentItem = {
   articleId: string;
+  articleType: string;
   body: string;
+  date?: string;
+  imageUrl?: string;
+  subtitle: string;
   title: string;
 };
 
-export type GetArticleContent = Pick<GetArticleContentItem, 'title' | 'body'>;
+export type GetArticleContent = Pick<
+  GetArticleContentItem,
+  'body' | 'imageUrl' | 'subtitle' | 'title'
+>;
 
 export type GetArticleResponseItem = {
   'article-id': string;
   'article-type': string;
   content: GetArticleContent;
+  date: string;
 };
 
 export type GetArticleResponse = {

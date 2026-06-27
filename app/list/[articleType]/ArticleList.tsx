@@ -58,7 +58,7 @@ const ArticleList: FC<ArticleListProps> = ({ articleType }) => {
     setIsSaving(true);
     const { error: responseError } = await writeArticle({
       articleType,
-      data: { body: '', title: '' },
+      data: { body: '', subtitle: '', title: '' },
       id: articleId,
       method: 'DELETE',
     });

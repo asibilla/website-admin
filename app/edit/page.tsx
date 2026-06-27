@@ -24,6 +24,7 @@ const Edit: FC = () => {
   const [isLoading, setIsLoading] = useState(!!articleId && !isNew);
   const [defaultValues, setDefaultValues] = useState<GetArticleContent>({
     body: '',
+    subtitle: '',
     title: '',
   });
 
@@ -40,6 +41,7 @@ const Edit: FC = () => {
           const article = (data as GetArticleContentItem[])[0];
           setDefaultValues({
             body: article.body,
+            subtitle: article.subtitle,
             title: article.title,
           });
         }

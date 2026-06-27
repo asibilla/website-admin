@@ -31,9 +31,10 @@ const EditArticleForm: FC<{
 
   const title = useWatch({ control, name: 'title' });
   const body = useWatch({ control, name: 'body' });
+  const subtitle = useWatch({ control, name: 'subtitle' });
 
   const onSubmit = () => {
-    submitArticle({ body, title });
+    submitArticle({ body, subtitle, title });
   };
 
   return (
@@ -52,6 +53,15 @@ const EditArticleForm: FC<{
             />
           )}
           rules={{ required: 'Title is required' }}
+        />
+      </EditArticleTextInputContainer>
+      <EditArticleTextInputContainer>
+        <Controller
+          control={control}
+          name="subtitle"
+          render={({ field }) => (
+            <TextField label="Subtitle" fullWidth {...field} />
+          )}
         />
       </EditArticleTextInputContainer>
       <EditArticleTextInputContainer>

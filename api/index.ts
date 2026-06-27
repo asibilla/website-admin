@@ -52,11 +52,22 @@ export const getArticle = async (
       throw data.error ?? new Error('Failed to fetch article');
     }
     return {
-      data: data.response.items.map(({ 'article-id': articleId, content }) => ({
-        articleId,
-        body: content?.body ?? '',
-        title: content?.title ?? '',
-      })),
+      data: data.response.items.map(
+        ({
+          'article-id': articleId,
+          'article-type': articleType,
+          content,
+          date,
+        }) => ({
+          articleId,
+          articleType,
+          body: content?.body ?? '',
+          date,
+          imageUrl: content?.imageUrl ?? '',
+          subtitle: content?.subtitle ?? '',
+          title: content?.title ?? '',
+        })
+      ),
       error: null,
     };
   } catch (error) {
@@ -85,8 +96,10 @@ export const writeArticle = async ({
       body: JSON.stringify({
         'article-id': id,
         'article-type': articleType,
+        date: new Date().toISOString(),
         content: {
           body: data.body,
+          subtitle: data.subtitle,
           title: data.title,
         },
       }),
