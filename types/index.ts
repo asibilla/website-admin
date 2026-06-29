@@ -23,6 +23,7 @@ export type GetArticleContentItem = {
   articleType: string;
   body: string;
   date?: string;
+  displayTitle?: string;
   imageUrl?: string;
   subtitle: string;
   title: string;
@@ -30,7 +31,7 @@ export type GetArticleContentItem = {
 
 export type GetArticleContent = Pick<
   GetArticleContentItem,
-  'body' | 'imageUrl' | 'subtitle' | 'title'
+  'body' | 'displayTitle' | 'imageUrl' | 'subtitle' | 'title'
 >;
 
 export type GetArticleResponseItem = {
@@ -38,6 +39,7 @@ export type GetArticleResponseItem = {
   'article-type': string;
   content: GetArticleContent;
   date: string;
+  displayTitle: string;
 };
 
 export type GetArticleResponse = {

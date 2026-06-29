@@ -58,11 +58,13 @@ export const getArticle = async (
           'article-type': articleType,
           content,
           date,
+          displayTitle,
         }) => ({
           articleId,
           articleType,
           body: content?.body ?? '',
           date,
+          displayTitle: displayTitle,
           imageUrl: content?.imageUrl ?? '',
           subtitle: content?.subtitle ?? '',
           title: content?.title ?? '',
@@ -96,13 +98,14 @@ export const writeArticle = async ({
       body: JSON.stringify({
         'article-id': id,
         'article-type': articleType,
-        date: new Date().toISOString(),
         content: {
           body: data.body,
           imageUrl: data.imageUrl ?? '',
           subtitle: data.subtitle,
           title: data.title,
         },
+        date: new Date().toISOString(),
+        displayTitle: data.title,
       }),
     });
 

@@ -69,7 +69,13 @@ const ArticleList: FC<ArticleListProps> = ({ articleType }) => {
 
     const { error: responseError } = await writeArticle({
       articleType,
-      data: { body: '', imageUrl: '', subtitle: '', title: '' },
+      data: {
+        body: '',
+        displayTitle: '',
+        imageUrl: '',
+        subtitle: '',
+        title: '',
+      },
       id: article.articleId,
       method: 'DELETE',
     });
@@ -98,7 +104,7 @@ const ArticleList: FC<ArticleListProps> = ({ articleType }) => {
               <Link
                 href={`/edit?articleId=${article.articleId}&articleType=${articleType}`}
               >
-                {article.title}
+                {article.displayTitle}
               </Link>
               <Button
                 onClick={() => deleteArticle(article)}

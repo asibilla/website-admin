@@ -66,6 +66,8 @@ export async function PATCH(request: Request) {
         subtitle: article.content?.subtitle ?? '',
         title: article.content?.title ?? '',
       },
+      date: article.date,
+      displayTitle: article.content?.title ?? '',
     },
   };
   return writeArticle(requestBody, 'PATCH');
