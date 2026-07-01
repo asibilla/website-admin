@@ -10,6 +10,9 @@ export const S3_BUCKET_NAME = process.env.S3_BUCKET_NAME ?? '';
 export const S3_PUBLIC_BASE_URL =
   process.env.S3_PUBLIC_BASE_URL ?? 'https://andysibilla.com';
 
+// Keys are UUID-based, so objects are immutable once uploaded.
+export const IMAGE_CACHE_CONTROL = 'public, max-age=31536000, immutable';
+
 export async function getS3Client() {
   const credentials = await defaultProvider()();
   return new S3Client({
@@ -70,6 +73,7 @@ export async function uploadImageToS3(
       Key: key,
       Body: buffer,
       ContentType: contentType,
+      CacheControl: IMAGE_CACHE_CONTROL,
     })
   );
 
