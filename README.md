@@ -1,36 +1,95 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Website Admin
 
-## Getting Started
+Local admin application for managing content on my personal website. It can
+list, create, edit, and delete articles and upload or remove article images.
 
-First, run the development server:
+This is a personal tool, not a reusable project:
+
+- It runs only on my local machine and is not deployed.
+- It depends on my website APIs and an authorized AWS identity.
+- It has no application-level authentication because it is not intended to be
+  exposed to a network.
+- The source repository is public, but credentials and local configuration are
+  not.
+
+## How it works
+
+The application uses Next.js App Router, React, TypeScript, and MUI. Public
+article and reference data are read from the website services. Mutations pass
+through local Next.js route handlers:
+
+- Article writes are signed for API Gateway with AWS Signature Version 4.
+- Image uploads and deletes use the AWS SDK for S3.
+- AWS credentials are resolved on the server through the standard Node.js
+  credential provider chain; they are never sent to the browser.
+
+Important areas:
+
+- `app/` — pages and local API route handlers
+- `components/` — article editor and shared UI
+- `api/` — client-side API helpers
+- `lib/s3.ts` — S3 configuration and operations
+- `constants/` — public service endpoints and paths
+- `types/` — API and UI data types
+
+## Local setup
+
+Requirements:
+
+- Node.js compatible with the versions in `package.json`
+- Yarn Classic
+- An AWS profile, SSO session, or other locally configured identity with the
+  required API Gateway and S3 permissions
+
+Install dependencies:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+yarn install --frozen-lockfile
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Create an ignored `.env.local` file:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```dotenv
+S3_BUCKET_NAME=<bucket-name>
+AWS_REGION=us-east-1
+S3_PUBLIC_BASE_URL=https://<public-assets-host>
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+`S3_BUCKET_NAME` is required for image mutations. `AWS_REGION` defaults to
+`us-east-1`, and `S3_PUBLIC_BASE_URL` has a website-specific default.
 
-## Learn More
+Authenticate the expected AWS identity outside this application, then start
+the development server:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+yarn dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Checks
 
-## Deploy on Vercel
+```bash
+yarn check:types
+yarn lint
+yarn format:check
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+There is no automated test suite.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Security
+
+Never commit AWS credentials, profile data, account or role identifiers,
+bucket names, tokens, or `.env` files. The application routes can mutate live
+website data using the active AWS identity, so the development server should
+remain local and must not be exposed to untrusted users.
+
+Before publishing changes, review both the current diff and Git history for
+accidentally committed secrets.
+
+## Deployment
+
+Deployment is intentionally unsupported. The application combines local
+server route handlers with a static-export configuration, which is suitable
+for the current development workflow but not a deployable production
+architecture.
