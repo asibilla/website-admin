@@ -1,4 +1,5 @@
 'use client';
+import { styled } from '@mui/material/styles';
 import { useEffect, useRef, useState, type FC } from 'react';
 
 import 'quill/dist/quill.snow.css';
@@ -9,6 +10,26 @@ interface EditorProps {
   onChange: (content: string) => void;
   value: string;
 }
+
+const EDITOR_HEIGHT = 400;
+
+const QuillEditorWrapper = styled('div')(({ theme }) => ({
+  '& .ql-toolbar.ql-snow': {
+    borderColor: theme.palette.divider,
+    borderTopLeftRadius: theme.shape.borderRadius,
+    borderTopRightRadius: theme.shape.borderRadius,
+  },
+  '& .ql-container.ql-snow': {
+    borderColor: theme.palette.divider,
+    borderBottomLeftRadius: theme.shape.borderRadius,
+    borderBottomRightRadius: theme.shape.borderRadius,
+    height: EDITOR_HEIGHT,
+  },
+  '& .ql-editor': {
+    height: '100%',
+    overflowY: 'auto',
+  },
+}));
 
 const EMPTY_QUILL_HTML = '<p><br></p>';
 
@@ -55,7 +76,7 @@ const ArticleBodyTextArea: FC<EditorProps> = ({ onChange, value }) => {
       quill = new Quill(editorElement, {
         modules: {
           toolbar: [
-            [{ header: [1, 2, false] }],
+            [{ header: [1, 2, 3, 4, 5] }],
             ['bold', 'italic', 'underline'],
           ],
         },
@@ -88,7 +109,7 @@ const ArticleBodyTextArea: FC<EditorProps> = ({ onChange, value }) => {
     setQuillHtml(quill, value);
   }, [value, isReady]);
 
-  return <div ref={containerRef} className="quill-editor-wrapper" />;
+  return <QuillEditorWrapper ref={containerRef} />;
 };
 
 export default ArticleBodyTextArea;
